@@ -6,8 +6,11 @@ using RDG.UnityUtil;
 
 namespace RDG.UnityUI {
     
+    // Not Fully Updated For Realtime / Auto Generation
+    
     [AddComponentMenu("RDG/UI/Drawer")]
-    public class UiDrawerBeh : MonoBehaviour, UIThemeInitItem {
+    
+    public class UiDrawerBeh: UIThemeableItem {
         
         private static readonly Quaternion Upward = Quaternion.Euler(new Vector3(0, 0 , -90));
         private static readonly Quaternion Downward = Quaternion.Euler(new Vector3(0, 0 , 90));
@@ -24,13 +27,17 @@ namespace RDG.UnityUI {
         private float targetHeight;
         private float toggleHeight;
         
-        public IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
+        public override IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
             theme = aTheme;
             drawerRect = GetComponent<RectTransform>();
             toggleHeight = toggleLayout.preferredHeight;
             targetHeight = drawerRect.rect.height - toggleHeight;
             UpdateHeight(1.0f);
             return CollectionUtils.Once(gameObject);
+        }
+        
+        public override object GetState() {
+            return null;
         }
 
         public void Start() {

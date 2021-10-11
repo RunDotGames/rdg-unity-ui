@@ -60,12 +60,12 @@ MonoBehaviour:
     - name: Button
       type: 5
       size: 14
-      font: {fileID: 12800000, guid: a5aba03f9ff1d4b448db13f9e5b14d85, type: 3}
+      font: {fileID: 12800000, guid: 8b61beec551199d4a988b0c79c760be6, type: 3}
       isCaps: 1
       spacing: 1.25
     - name: Subtitle
       type: 3
-      size: 4
+      size: 16
       font: {fileID: 12800000, guid: a5aba03f9ff1d4b448db13f9e5b14d85, type: 3}
       isCaps: 0
       spacing: 0.1
@@ -92,24 +92,24 @@ MonoBehaviour:
       type: 0
       sprite: {fileID: 21300000, guid: 6b0fae394be2eb64ca78392b94bd7f0d, type: 3}
       shadow: {fileID: 21300000, guid: c0db8ae0c5a48a04fa988bef0e577cc2, type: 3}
-      outline: {fileID: 21300000, guid: 06926f6470fc9664680508d2628d5582, type: 3}
+      outline: {fileID: 21300000, guid: acc9b05bdd6f7b048b2ee932885e9372, type: 3}
       shadowSize: 6
       preserveAspect: 0
-      imageType: 0
+      imageType: 1
     - name: Rounded Square
       type: 1
       sprite: {fileID: 21300000, guid: 3e66b5721a25ba9418dc3d2576aa63e6, type: 3}
       shadow: {fileID: 21300000, guid: b56ec2a5b94721f4bbc86917356efa77, type: 3}
-      outline: {fileID: 21300000, guid: 06926f6470fc9664680508d2628d5582, type: 3}
-      shadowSize: 6
+      outline: {fileID: 21300000, guid: 2b90174825e32fe4cbd58757c7609d80, type: 3}
+      shadowSize: 6.5
       preserveAspect: 0
       imageType: 1
     - name: Circle
       type: 2
-      sprite: {fileID: 21300000, guid: c460f8fa74f0be340ab743ab1515c939, type: 3}
+      sprite: {fileID: 21300000, guid: d4a471e555684ba46ace37933910f8c0, type: 3}
       shadow: {fileID: 21300000, guid: 14519b2ce02f4b84eb42c914a374b104, type: 3}
-      outline: {fileID: 21300000, guid: 98de3da4e609e6b4b95c78dbd6acbf40, type: 3}
-      shadowSize: 2
+      outline: {fileID: 21300000, guid: 99feb4d1231230f45a8fc05f79c23c7c, type: 3}
+      shadowSize: 8
       preserveAspect: 1
       imageType: 0
     - name: Check

@@ -1,25 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RDG.UnityUtil;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace RDG.UnityUI {
+
     
     [AddComponentMenu("RDG/UI/Checkbox")]
-    public class UiCheckbox : MonoBehaviour, UIThemeInitItem, IPointerClickHandler {
-
-        public bool isChecked;
-        public string label;
-        public bool isClickDisabled;
-        public UIThemeColorType labelColor = UIThemeColorType.OnSurface;
-        public UIThemeColorType boxColor = UIThemeColorType.Primary;
-
-        public bool IsChecked => isChecked;
+    public class UiCheckbox: UIThemeableItem, IPointerClickHandler {
+        
+        [Serializable]
+        public class State {
+            public bool isChecked;
+            public string label;
+            public bool isClickDisabled;
+            public UIThemeColorType labelColor = UIThemeColorType.OnSurface;
+            public UIThemeColorType boxColor = UIThemeColorType.Primary;
+        }
+        
+        public bool IsChecked => state.isChecked;
         
         [SerializeField, HideInInspector] private UiTextBeh textBeh;
         [SerializeField, HideInInspector] private UiShapeBeh boxShapeBeh;
         [SerializeField, HideInInspector] private UiRipple ripple;
         [SerializeField, HideInInspector] private UiShapeBeh checkShapeBeh;
+        [SerializeField] private State state;
         private static void PositionBox(UiTheme theme, RectTransform rect) {
             var halfUp = Vector2.up * 0.5f;
             rect.anchorMax = Vector2.right + halfUp;
@@ -27,7 +33,7 @@ namespace RDG.UnityUI {
             rect.pivot = Vector2.right + halfUp;
             rect.sizeDelta = Vector2.one * theme.CheckboxSize;
         }
-        public IEnumerable<GameObject> InitTheme(UiTheme theme) {
+        public override IEnumerable<GameObject> InitTheme(UiTheme theme) {
             UiThemeUtil.AddChild(ref textBeh, "Label", transform, theme);
             if (UiThemeUtil.AddChild(ref boxShapeBeh, "Box", transform, theme)) {
                 boxShapeBeh.gameObject.AddComponent<UiRipple>();
@@ -40,12 +46,12 @@ namespace RDG.UnityUI {
             ripple.InitTheme(theme);
             
             textBeh.SetAlignment(TextAnchor.MiddleRight);
-            textBeh.SetColor(labelColor);
-            textBeh.SetValue(label);
+            textBeh.SetColor(state.labelColor);
+            textBeh.SetValue(state.label);
             textBeh.SetFontType(UIThemeFontType.Body);
             PositionBox(theme, boxShapeBeh.GetComponent<RectTransform>());
             boxShapeBeh.SetHasShadow(true);
-            boxShapeBeh.SetColorType(boxColor);
+            boxShapeBeh.SetColorType(state.boxColor);
             boxShapeBeh.SetShapeType(UiThemeShapeType.RoundedSquare);
             boxShapeBeh.SetIsOutline(false);
             checkShapeBeh.SetHasShadow(false);
@@ -56,17 +62,20 @@ namespace RDG.UnityUI {
             checkShapeBeh.SetIsOutline(false);
             var textRect = textBeh.GetComponent<RectTransform>();
             textRect.offsetMax = Vector2.right * (-theme.CheckboxSize - 5);
-            boxShapeBeh.SetColorType(boxColor);
+            boxShapeBeh.SetColorType(state.boxColor);
             boxShapeBeh.SetShapeType(UiThemeShapeType.RoundedSquare);
             
-            SetChecked(isChecked);
-            SetClickDisabled(isClickDisabled);
+            SetChecked(state.isChecked);
+            SetClickDisabled(state.isClickDisabled);
             
             return CollectionUtils.Once(gameObject);
         }
+        public override object GetState() {
+            return state;
+        }
 
         public void SetChecked(bool isNowChecked) {
-            isChecked = isNowChecked;
+            state.isChecked = isNowChecked;
             if (checkShapeBeh == null) {
                 return;
             }
@@ -74,18 +83,18 @@ namespace RDG.UnityUI {
         }
 
         public void SetClickDisabled(bool isNowClickDisabled) {
-            isClickDisabled = isNowClickDisabled;
-            ripple.SetDisabled(isClickDisabled);
-            boxShapeBeh.SetHasShadow(!isClickDisabled);
-            boxShapeBeh.SetIsOutline(isClickDisabled);
-            checkShapeBeh.SetColorType(isNowClickDisabled ? boxColor : UiThemeUtil.ToOnColor[boxColor]);
+            state.isClickDisabled = isNowClickDisabled;
+            ripple.SetDisabled(isNowClickDisabled);
+            boxShapeBeh.SetHasShadow(!isNowClickDisabled);
+            boxShapeBeh.SetIsOutline(isNowClickDisabled);
+            checkShapeBeh.SetColorType(isNowClickDisabled ? state.boxColor : UiThemeUtil.ToOnColor[state.boxColor]);
         }
         public void OnPointerClick(PointerEventData eventData) {
-            if (isClickDisabled) {
+            if (state.isClickDisabled) {
                 return;
             }
             
-            SetChecked(!isChecked);
+            SetChecked(!state.isChecked);
         }
     }
 }

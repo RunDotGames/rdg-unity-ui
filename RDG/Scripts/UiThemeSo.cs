@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using RDG.UnityUtil;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -114,18 +115,22 @@ namespace RDG.UnityUI {
 
     }
 
-    public interface UIThemeInitItem {
-        IEnumerable<GameObject> InitTheme(UiTheme theme);
+    public abstract class UIThemeableItem : MonoBehaviour {
+        public abstract IEnumerable<GameObject> InitTheme(UiTheme theme);
+        public abstract object GetState();
+
     }
 
     public interface UIThemePostInitItem {
         IEnumerable<GameObject> PostInitTheme(UiTheme theme);
     }
+    
+    public interface UIThemeCursorInitItem {
+        void InitCursor(CursorSo cursors);
+    }
 
     [CreateAssetMenu(menuName = "RDG/UI/Theme")]
     public class UiThemeSo : ScriptableObject {
-
-        
 
         public UiThemeConfig theme;
         public bool isDebug;
@@ -133,10 +138,7 @@ namespace RDG.UnityUI {
         public UiTheme NewTheme() {
             return new UiTheme(theme, isDebug);
         }
-        
-        public void OnEnable() {
-            UiParentStaticRegister.RegisterTheme(this);
-        }
+
 
     }
 }

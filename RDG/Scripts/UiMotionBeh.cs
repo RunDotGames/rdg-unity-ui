@@ -8,7 +8,7 @@ using System.Linq;
 namespace RDG.UnityUI {
 
     [AddComponentMenu("RDG/UI/Motion")]
-    public class UiMotionBeh : MonoBehaviour, UIThemeInitItem {
+    public class UiMotionBeh: UIThemeableItem {
 
         public Vector2 offset;
 
@@ -18,7 +18,7 @@ namespace RDG.UnityUI {
         private Coroutine motionRoutine;
         private TaskCompletionSource<bool> taskSource;
 
-        public IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
+        public override IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
             theme = aTheme;
             var obj = gameObject;
             rectTransform = obj.GetComponent<RectTransform>();
@@ -67,6 +67,8 @@ namespace RDG.UnityUI {
                 yield return CoroutineUtils.EndOfFrame;
             }
         }
-        
+        public override object GetState() {
+            return null;
+        }
     }
 }

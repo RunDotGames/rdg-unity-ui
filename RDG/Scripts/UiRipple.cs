@@ -9,7 +9,7 @@ namespace RDG.UnityUI {
     
     [AddComponentMenu("RDG/UI/Ripple")]
     [RequireComponent(typeof(UiShapeBeh))]
-    public class UiRipple : MonoBehaviour, UIThemeInitItem, IPointerDownHandler, IPointerUpHandler {
+    public class UiRipple: UIThemeableItem, IPointerDownHandler, IPointerUpHandler {
         
         public bool isClickDisabled;
         
@@ -19,9 +19,10 @@ namespace RDG.UnityUI {
         private bool fadeOut;
         private Coroutine rippleRoutine;
 
-        public IEnumerable<GameObject> InitTheme(UiTheme theme) {
+        public override IEnumerable<GameObject> InitTheme(UiTheme theme) {
             uiTheme = theme;
             shape = ComponentUtils.GetRequiredComp<UiShapeBeh>(this);
+            shape.InitTheme(theme);
             SetDisabled(isClickDisabled);
             return CollectionUtils.Once(gameObject);
         }
@@ -73,12 +74,13 @@ namespace RDG.UnityUI {
             UiThemeUtil.AddChild(ref ripple, "Ripple", shapeImage.transform, uiTheme);
             ripple.transform.SetSiblingIndex(0);
             ripple.gameObject.SetActive(true);
+            ripple.raycastTarget = false;
             var rippleRect = ripple.rectTransform;
             var shapeRect = shapeImage.rectTransform;
             ripple.sprite = uiTheme.GetShape(UiThemeShapeType.Circle).sprite;
             ripple.preserveAspect = true;
             ripple.type = Image.Type.Simple;
-            ripple.color = uiTheme.GetColor(UiThemeUtil.ToLightColor[shape.colorType]).color;
+            ripple.color = uiTheme.GetColor(UiThemeUtil.ToLightColor[shape.ColorType]).color;
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 shapeImage.rectTransform,
                 eventData.position,
@@ -108,6 +110,10 @@ namespace RDG.UnityUI {
 
         public void SetDisabled(bool disabled) {
             isClickDisabled = disabled;
+        }
+        
+        public override object GetState() {
+            return null;
         }
     }
 }

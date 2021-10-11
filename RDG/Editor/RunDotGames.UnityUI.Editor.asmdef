@@ -1,0 +1,19 @@
+{
+    "name": "RunDotGames.UnityUI.Editor",
+    "rootNamespace": "",
+    "references": [
+        "RunDotGames.UnityUtil",
+        "RunDotGames.UnityUI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

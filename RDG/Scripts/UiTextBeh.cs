@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RDG.UnityUtil;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ namespace RDG.UnityUI {
     
     [AddComponentMenu("RDG/UI/Text")]
     [RequireComponent(typeof(Text))]
-    public class UiTextBeh : MonoBehaviour, UIThemeInitItem {
+    public class UiTextBeh: UIThemeableItem {
 
         public UIThemeColorType colorType = UIThemeColorType.OnSurface;
         public UIThemeFontType fontType = UIThemeFontType.Body;
@@ -19,7 +20,8 @@ namespace RDG.UnityUI {
 
         [SerializeField, HideInInspector] private Text text;
 
-        public IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
+
+        public override IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
             theme = aTheme;
             text = ComponentUtils.GetRequiredComp<Text>(this);
             text.hideFlags = theme.InspectorHideFlags;
@@ -55,9 +57,14 @@ namespace RDG.UnityUI {
         public void SetValue(string textValue) {
             value = textValue;
             var themeFont = theme.GetFont(fontType);
-            text.text = themeFont.isCaps ? textValue.ToUpper() : textValue;
+            if (!text) {
+                throw new Exception("text undefined");
+            }
+            text.text = themeFont.isCaps ? textValue?.ToUpper() ?? "" : textValue;
         }
         
-        public GameObject InitRoot => gameObject;
+        public override object GetState() {
+            return null;
+        }
     }
 }

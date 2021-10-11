@@ -10,15 +10,21 @@ namespace RDG.UnityUI {
     [AddComponentMenu("RDG/UI/Modal")]
     [RequireComponent(typeof(UiShapeBeh))]
     [RequireComponent(typeof(UiMotionBeh))]
-    public class UiModalBeh : MonoBehaviour, UIThemeInitItem, UIThemePostInitItem, UIModal {
+    public class UiModalBeh: UIThemeableItem, UIThemePostInitItem, UIModal {
 
+        [Serializable]
+        public class State {
+            public Vector2 size;
+            public Vector2 position;
+            public bool isVisible;    
+        } 
+        
         public event Action OnOpen;
         public event Action<bool> OnClose;
         
         public UiModalsSo modals;
-        public Vector2 size;
-        public Vector2 position;
-        public bool isVisible;
+        
+        
         private UiTheme theme;
         
         [HideInInspector, SerializeField] private UiMotionBeh openMotion;
@@ -27,24 +33,25 @@ namespace RDG.UnityUI {
         [HideInInspector, SerializeField] private VerticalLayoutGroup layoutGroup;
         [HideInInspector, SerializeField] private LayoutElement closeButtonRowLayout;
         [HideInInspector, SerializeField] private LayoutElement contentRowLayout;
+        [SerializeField]
+        private State state = new State();
         
         
-        public IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
+        public override IEnumerable<GameObject> InitTheme(UiTheme aTheme) {
             theme = aTheme;
-            if (modals == null) {
-                throw new Exception("Modal requires Modals so");
+            if (modals != null) {
+                modals.ResetState();
             }
-            modals.ResetState();
             windowShape = ComponentUtils.GetRequiredComp<UiShapeBeh>(this);
             windowShape.hideFlags = theme.InspectorHideFlags;
             openMotion = ComponentUtils.GetRequiredComp<UiMotionBeh>(this);
             openMotion.hideFlags = theme.InspectorHideFlags;
-            openMotion.offset = Vector2.right * (size.x + position.x);
+            openMotion.offset = Vector2.right * (state.size.x + state.position.x);
             var rectTransform = GetComponent<RectTransform>();
-            rectTransform.anchorMin = Vector2.one;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.pivot = Vector2.one;
-            rectTransform.sizeDelta = size;
+            rectTransform.anchorMin = Vector2.one * 0.5f;
+            rectTransform.anchorMax = Vector2.one * 0.5f;;
+            rectTransform.pivot = Vector2.one * 0.5f;;
+            rectTransform.sizeDelta = state.size;
                 
             
             if (UiThemeUtil.AddChild(ref layoutGroup, "Layout", transform, theme)) {
@@ -73,12 +80,13 @@ namespace RDG.UnityUI {
             
             closeButtonRowLayout.transform.SetSiblingIndex(0);
             contentRowLayout.transform.SetSiblingIndex(1);
-            
+             
             UiThemeUtil.AddChild(ref closeButton, "Close Button", closeButtonRowLayout.transform, theme);
-            closeButton.shapeType = UiThemeShapeType.Circle;
-            closeButton.colorType = UIThemeColorType.Secondary;
-            closeButton.text = "x";
             closeButton.InitTheme(theme);
+            closeButton.SetShapeType(UiThemeShapeType.Circle);
+            closeButton.SetColorType(UIThemeColorType.Secondary);
+            closeButton.SetText("x");
+            
             closeButton.gameObject.hideFlags = theme.HierarchyHideFlags;
             var closeTransform = closeButton.GetComponent<RectTransform>();
             closeTransform.anchorMax = Vector2.one;
@@ -86,15 +94,13 @@ namespace RDG.UnityUI {
             closeTransform.pivot = Vector2.right + Vector2.up * .5f;
             closeTransform.sizeDelta = Vector2.right * 25;
 
-
+            rectTransform.anchoredPosition = state.position;
 
             return CollectionUtils.Once(gameObject);
         }
         public IEnumerable<GameObject> PostInitTheme(UiTheme _) {
-            var rectTransform = GetComponent<RectTransform>();
-            rectTransform.anchoredPosition = position;
             openMotion.EvalEndPos();
-            gameObject.SetActive(isVisible);
+            gameObject.SetActive(state.isVisible);
 
             closeButton.OnClick = HandleCloseClick;
             
@@ -111,15 +117,15 @@ namespace RDG.UnityUI {
         public void OpenModal() {
             gameObject.SetActive(true);
             openMotion.PlayOut();
-            isVisible = true;
+            state.isVisible = true;
             OnOpen?.Invoke();
         }
         public Task CloseModal(bool isGraceful) {
-            if (!isVisible) {
+            if (state.isVisible) {
                 return Task.CompletedTask;
             }
             
-            isVisible = false;
+            state.isVisible = false;
             OnClose?.Invoke(isGraceful);
             return openMotion.PlayIn().ContinueWith(result => {
                 gameObject.SetActive(false);
@@ -138,5 +144,10 @@ namespace RDG.UnityUI {
         public void RemoveOpenHandler(Action onOpen) {
             OnOpen -= onOpen;
         }
+
+        public override object GetState() {
+            return state;
+        }
+        
     }
 }
